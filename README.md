@@ -22,12 +22,6 @@ ConsolePath> npx tailwindcss init -p
 
 ConsolePath> npm i sass  // we added sass library to our tut project
 
-
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
 Some different fragments in html and tsx files:
 
 -> class =>  className;
