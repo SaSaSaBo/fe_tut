@@ -22,6 +22,8 @@ ConsolePath> npx tailwindcss init -p
 
 ConsolePath> npm i sass  // we added sass library to our tut project
 
+ConsolePath> npm i classnames  // we adding this for the control the specific variants styles
+
 Some different fragments in html and tsx files:
 
 -> class =>  className;
