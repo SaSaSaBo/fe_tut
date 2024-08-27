@@ -131,33 +131,116 @@
 
 // export default App
 
+// import * as React from 'react';
+// import { forwardRef, useRef } from 'react';
 
-import * as React from 'react';
-import { forwardRef, useRef } from 'react';
+// const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
+//   return <input ref={ref} type='text' {...props} />
+// })
 
-const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
-  return <input ref={ref} type='text' {...props} />
-})
+// // Input = forwardRef(Input)
 
-// Input = forwardRef(Input)
+// function App() {
+
+//   const inputRef = useRef<HTMLInputElement | null>(null);;
+
+//   const focusInput = () => {
+//     if (inputRef.current) {
+//       inputRef.current.focus();
+//     }
+//   }
+
+//   return (
+//     <>
+//       <h1>useRef() - forwardRef()</h1>
+//       <Input title="test" ref={inputRef}/>
+//       <button onClick={focusInput}>Focus On</button>
+//     </>
+//   )
+// }
+
+// export default App
+
+import React, { useState, useReducer } from 'react';
+import todoReducer from './reducer/todoReducer';
+
+// function reducer(state: any, action: {
+//   todo: any; type: any; value: any; 
+// }) {
+//   switch (action.type) {
+//     case 'SET_TODO':
+//       return {
+//         ...state,
+//         todo: action.value
+//       }
+//     case 'ADD_TODO':
+//       return {
+//         ...state,
+//         todo: '',
+//         todos: [
+//           ...state.todos,
+//           action.todo
+//         ]
+//       }
+//   }
+// }
 
 function App() {
 
-  const inputRef = useRef<HTMLInputElement | null>(null);;
+  const [state, dispatch] = useReducer(todoReducer, {
+    todos: [],
+    todo: '',
+  }); 
 
-  const focusInput = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+  // const [todos, setTodos] = useState<string[]>([]);
+  // const [todo, setTodo] = useState<string>('');
+  // Because the const [state, dispatch] we don't use like that
+
+  const submitHandle = (e: React.FormEvent) => {
+    e.preventDefault();
+    dispatch({
+      type: 'ADD_TODO',
+      todo: state.todo,
+      value: undefined
+    })
+    // if (todo) {
+    //   setTodos([...todos, todo]);
+    //   setTodo(''); // Clear input after form submission
+    // }
+  };
+
+  const onChange = (e: { target: { value: any; }; }) => {
+    // setTodo(e.target.value);
+    dispatch({
+      type: 'SET_TODO',
+      value: e.target.value,
+      todo: undefined
+    })
   }
 
   return (
     <>
-      <h1>useRef() - forwardRef()</h1>
-      <Input title="test" ref={inputRef}/>
-      <button onClick={focusInput}>Focus On</button>
+      <h1>TodoApp</h1>
+      <form onSubmit={submitHandle}>
+        <input 
+          type="text" 
+          value={state.todo} 
+          onChange={onChange} 
+          // onChange={e => setTodo(e.target.value)}
+        />
+        <button disabled={!state.todo} type='submit'>Add</button>
+      </form>
+      <ul>
+        {
+          state.todos.map((todo: any, index: number) => (
+            <li key={index}>{todo}</li>
+          ))
+        }
+      </ul>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
+
+
