@@ -114,17 +114,48 @@
 
 // export default App;
 
-import Test from './Test';
-import React, { useState } from 'react'
+// import Test from './Test';
+// import React, { useState } from 'react'
+
+// function App() {
+
+//   const [show, setShow] = useState(false);
+
+//   return (
+//     <>
+//       <button onClick={() => setShow(show => !show)}>{ show ? 'Hide' : 'Show' }</button>
+//       { show && <Test /> }
+//     </>
+//   )
+// }
+
+// export default App
+
+
+import * as React from 'react';
+import { forwardRef, useRef } from 'react';
+
+const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
+  return <input ref={ref} type='text' {...props} />
+})
+
+// Input = forwardRef(Input)
 
 function App() {
 
-  const [show, setShow] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);;
+
+  const focusInput = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }
 
   return (
     <>
-      <button onClick={() => setShow(show => !show)}>{ show ? 'Hide' : 'Show' }</button>
-      { show && <Test /> }
+      <h1>useRef() - forwardRef()</h1>
+      <Input title="test" ref={inputRef}/>
+      <button onClick={focusInput}>Focus On</button>
     </>
   )
 }
