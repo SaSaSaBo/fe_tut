@@ -1,3 +1,4 @@
+/* eslint-disable no-sequences */
 // /* eslint-disable @typescript-eslint/no-unused-vars */
 // import './some.css';
 // // We use these css code for Tailwind.tsx code. And after the library that we add <sass> to our project we  are gonna use he style.scss.
@@ -161,8 +162,11 @@
 
 // export default App
 
-import React, { useState, useReducer } from 'react';
+import React, { useState, useReducer, useCallback, useMemo } from 'react';
 import todoReducer from './reducer/todoReducer';
+import Header from './Header';
+import AddTodo from './AddTodo';
+import Todos from './Todos';
 
 // function reducer(state: any, action: {
 //   todo: any; type: any; value: any; 
@@ -187,16 +191,19 @@ import todoReducer from './reducer/todoReducer';
 
 function App() {
 
+  const [count, setCount] = useState(0);
+
   const [state, dispatch] = useReducer(todoReducer, {
     todos: [],
     todo: '',
+    search: '',
   }); 
 
   // const [todos, setTodos] = useState<string[]>([]);
   // const [todo, setTodo] = useState<string>('');
   // Because the const [state, dispatch] we don't use like that
 
-  const submitHandle = (e: React.FormEvent) => {
+  const submitHandle = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     dispatch({
       type: 'ADD_TODO',
@@ -207,36 +214,56 @@ function App() {
     //   setTodos([...todos, todo]);
     //   setTodo(''); // Clear input after form submission
     // }
-  };
+  }, [state.todo])
 
-  const onChange = (e: { target: { value: any; }; }) => {
+  const searchHendle = (e: { target: { value: any; }; }) => {
+    dispatch({
+      type: 'SET_SEARCH',
+      value: e.target.value,
+      todo: undefined
+    })
+  }
+  
+  const filteredTodos = useMemo(() => {
+    return state.todos.filter((todo: string) => 
+      todo.toLocaleLowerCase('TR').includes(state.search.toLocaleLowerCase('TR'))
+    );
+  }, [state.todos, state.search]);
+  // The component we were memoizing was changing because its location in memory was changing. To prevent this, we used the useMemo property to prevent it from rendering outside of the events we specified.  
+  
+  // state.todos.filter(todo => todo.toLocaleLowerCase('TR').includes(state.search.toLocaleLowerCase('TR')));
+
+
+  const onChange = useCallback((e: { target: { value: any; }; }) => {
     // setTodo(e.target.value);
     dispatch({
       type: 'SET_TODO',
       value: e.target.value,
       todo: undefined
     })
-  }
+  }, [])
 
+  // If we are passing a method as a prop in a component, we are using it to wrap that method. And it keeping in the memory
+
+  console.log('App render');
+  
   return (
     <>
+    <Header />
+    <h3>{count}</h3>
+    <button onClick={() => setCount(count + 1)}>Increase</button>
+    <hr />
       <h1>TodoApp</h1>
-      <form onSubmit={submitHandle}>
-        <input 
-          type="text" 
-          value={state.todo} 
-          onChange={onChange} 
-          // onChange={e => setTodo(e.target.value)}
-        />
-        <button disabled={!state.todo} type='submit'>Add</button>
-      </form>
-      <ul>
-        {
-          state.todos.map((todo: any, index: number) => (
-            <li key={index}>{todo}</li>
-          ))
-        }
-      </ul>
+      <input type="text" value={state.search} placeholder='Search Todo' onChange={searchHendle} />
+      <br />
+      <br />
+      {state.search}
+      <hr />
+    <AddTodo submitHandle={submitHandle} onChange={onChange} todo={state.todo} />
+      {/* we moved the form to AddTodo.tsx file */}
+      <Todos todos={filteredTodos} />
+      {/* we moved the ul to Todos.tsx file */}
+
     </>
   );
 }

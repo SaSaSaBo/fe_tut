@@ -16,6 +16,11 @@ function reducer(state: any, action: {
           action.todo
         ]
       }
+    case 'SET_SEARCH':
+      return {
+        ...state,
+        search: action.value,
+      }
   }
 }
 
